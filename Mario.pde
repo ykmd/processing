@@ -4,7 +4,6 @@ class Mario {
   int w = 150, h = 100;
   boolean isJumping = false;
   boolean isFalling = false;
-  boolean canJump = true;
   int jumpHeight = 0;
   int initialJumpLimit = 400;
   int jumpLimit = initialJumpLimit;
@@ -39,7 +38,6 @@ class Mario {
       falls();
       if (jumpHeight <= 0) {
         isFalling = false;
-        canJump = true;
       }
     }
 
@@ -55,9 +53,8 @@ class Mario {
         pos.x+=50;
       } else if (keyCode == LEFT && !blockRight) {
         pos.x-=50;
-      } else if (keyCode == UP && canJump == true) {
+      } else if (keyCode == UP && !isfalling) {
         isJumping = true;
-        canJump = false;
       }
     }
   }
@@ -122,7 +119,6 @@ class Mario {
         pos.y -= 10;
         jumpHeight = 0;
         isFalling = false;
-        canJump = true;
       } else if (isOn("LEFT", item)) {
         blockLeft = true;
         pos.x -= 1;
