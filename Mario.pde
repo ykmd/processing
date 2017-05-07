@@ -53,7 +53,7 @@ class Mario {
         pos.x+=50;
       } else if (keyCode == LEFT && !blockRight) {
         pos.x-=50;
-      } else if (keyCode == UP && !isfalling) {
+      } else if (keyCode == UP && !isFalling) {
         isJumping = true;
       }
     }
