@@ -21,6 +21,12 @@ class Mario {
   void display() {
     imageMode(CENTER);
     image(mario, pos.x, pos.y, w, h);
+
+    if (pos.y < 660 && !blockBottom && !isJumping) {
+        jumpHeight = 660 - pos.y;
+        stopJumping();
+    }
+
     if (isJumping == true) {
       jumps();
       image(marioJump, pos.x, pos.y, w, h);
@@ -36,10 +42,7 @@ class Mario {
         canJump = true;
       }
     }
-    if (pos.y < 660 && !blockBottom && !isJumping) {
-        jumpHeight = 660 - pos.y;
-        stopJumping();
-    }
+
     if (pos.x < 0)
       pos.x = 0;
     if (pos.x > width)

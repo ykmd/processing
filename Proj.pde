@@ -77,12 +77,12 @@ void draw() {
       //textFont(myFont);
       textAlign(CENTER);
       textSize(20);
-      text("@1985 NIETENDO", width/2 + 200, 480); 
+      text("@1985 NIETENDO", width/2 + 200, 480);
 
       start.create(width/2, 550, 300, 50, "START GAME");
 
       howtoplay.create(width/2, 600, 300, 50, "HOW TO PLAY");
-    } 
+    }
 
     if (start.clicked==true) {
       mode=1;
@@ -112,7 +112,8 @@ void draw() {
     text(nf(float(timeLeft)/1000, 2, 1)+"s", 1300, 50);
 
     mario.display();
-    
+    mario.blockReset();
+
     for (int i=0; i<bricks.length; i++) {
       bricks[i].display();
       bricks[i].move();
