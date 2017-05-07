@@ -4,12 +4,14 @@ class Mario {
   int w = 150, h = 100;
   boolean isJumping = false;
   boolean isFalling = false;
-  boolean canMoveRight = true;
-  boolean canMoveLeft = true;
   boolean canJump = true;
   int jumpHeight = 0;
-  int initialJumpLimit = 500;
+  int initialJumpLimit = 400;
   int jumpLimit = initialJumpLimit;
+  boolean blockTop = false;
+  boolean blockBottom = false;
+  boolean blockLeft = false;
+  boolean blockRight = false;
 
   Mario() {
     mario = loadImage("Mario.png");
@@ -30,11 +32,14 @@ class Mario {
     if (isFalling == true) {
       falls();
       if (jumpHeight <= 0) {
-        isFalling = false; 
+        isFalling = false;
         canJump = true;
       }
     }
-
+    if (pos.y < 660 && !blockBottom && !isJumping) {
+        jumpHeight = 660 - pos.y;
+        stopJumping();
+    }
     if (pos.x < 0)
       pos.x = 0;
     if (pos.x > width)
@@ -43,9 +48,9 @@ class Mario {
 
   void keyPressed() {
     if (key == CODED) {
-      if (keyCode == RIGHT && canMoveRight == true) {
+      if (keyCode == RIGHT && !blockLeft) {
         pos.x+=50;
-      } else if (keyCode == LEFT && canMoveLeft == true) {
+      } else if (keyCode == LEFT && !blockRight) {
         pos.x-=50;
       } else if (keyCode == UP && canJump == true) {
         isJumping = true;
@@ -79,14 +84,14 @@ class Mario {
   boolean isOn(String direction, Block item) { //to check if Mario is touching the box from that direction
     if (direction == "LEFT") {
       return (isBetween(pos.y, item.pos.y, item.pos.y + item.height) //the y position of Mario is between the y position of the object
-        || isBetween(pos.y + h, item.pos.y, item.pos.y + item.height)) 
+        || isBetween(pos.y + h, item.pos.y, item.pos.y + item.height))
         && isLessThan(pos.x, pos.x + w, item.pos.x + item.width); //the x position of the object > Mario (x+width) = Mario will be on the left hand side of the object
     } else if (direction == "RIGHT") {
       return (isBetween(pos.y, item.pos.y, item.pos.y + item.height)
         || isBetween(pos.y + h, item.pos.y, item.pos.y + item.height))
         && isMoreThan(pos.x, pos.x + w, item.pos.x);
     } else if (direction == "TOP") {
-      return (isBetween(pos.x, item.pos.x, item.pos.x + item.width) 
+      return (isBetween(pos.x, item.pos.x, item.pos.x + item.width)
         || isBetween(pos.x + w, item.pos.x, item.pos.x + item.width))
         && isLessThan(pos.y, pos.y + h, item.pos.y + h);
     } else if (direction == "BOTTOM") {
@@ -97,21 +102,30 @@ class Mario {
     return false;
   }
 
+  void blockReset() {
+    blockTop = false;
+    blockBottom = false;
+    blockLeft = false;
+    blockRight = false;
+  }
+
   void isBlockedBy(Block item) {
-    canMoveLeft = true;
-    canMoveRight = true;
-    if (isColliding(item)) {
+    if (isColliding(item) && !item.transpass) {
       if (isOn("BOTTOM", item)) {
+        blockTop = true;
         stopJumping();
       } else if (isOn("TOP", item)) {
-        jumps();
-        // this is not a real jump. it's here to counter the fall only.
+        blockBottom = true;
+        pos.y -= 10;
+        jumpHeight = 0;
+        isFalling = false;
+        canJump = true;
       } else if (isOn("LEFT", item)) {
+        blockLeft = true;
         pos.x -= 1;
-        canMoveLeft = false;
       } else if (isOn("RIGHT", item)) {
+        blockRight = true;
         pos.x += 1;
-        canMoveRight = false;
       }
     }
   }
@@ -120,10 +134,10 @@ class Mario {
     if (isColliding(coins.get(index))) {
         coins.remove(index);
         return true;
-      }
-      return false;
     }
-  
+    return false;
+  }
+
   void stopJumping() {
     isJumping = false;
     isFalling = true;

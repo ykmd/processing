@@ -6,6 +6,7 @@ class Coin extends Block {
     super(tempCxpos, tempCypos, 100, 100);
     xspeed = tempXspeed;
     coin = loadImage("coin.png");
+    transpass = true;
   }
 
   void display() {
