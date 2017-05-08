@@ -4,9 +4,8 @@ class Mario {
   int w = 150, h = 100;
   boolean isJumping = false;
   boolean isFalling = false;
-  boolean canJump = true;
   int jumpHeight = 0;
-  int initialJumpLimit = 400;
+  int initialJumpLimit = 500;
   int jumpLimit = initialJumpLimit;
   boolean blockTop = false;
   boolean blockBottom = false;
@@ -39,7 +38,6 @@ class Mario {
       falls();
       if (jumpHeight <= 0) {
         isFalling = false;
-        canJump = true;
       }
     }
 
@@ -55,9 +53,8 @@ class Mario {
         pos.x+=50;
       } else if (keyCode == LEFT && !blockRight) {
         pos.x-=50;
-      } else if (keyCode == UP && canJump == true) {
+      } else if (keyCode == UP && !isFalling) {
         isJumping = true;
-        canJump = false;
       }
     }
   }
@@ -71,36 +68,19 @@ class Mario {
       || isInbound(item.pos.x, item.pos.y + item.height) || isInbound(item.pos.x + item.width, item.pos.y + item.height);
   }
 
-
-  boolean isBetween(int target, int lowEnd, int highEnd) {
-    return (lowEnd <= target) && (target <= highEnd); //if target >= lowEnd && <= highEnd = target is between lowEnd and hignEnd
-  }
-
-  boolean isLessThan(int lowPoint, int highPoint, int end) {
-    return (lowPoint < end) && (highPoint < end);
-  }
-
-  boolean isMoreThan(int lowPoint, int highPoint, int end) {
-    return (lowPoint > end) && (highPoint > end);
-  }
-
   boolean isOn(String direction, Block item) { //to check if Mario is touching the box from that direction
     if (direction == "LEFT") {
-      return (isBetween(pos.y, item.pos.y, item.pos.y + item.height) //the y position of Mario is between the y position of the object
-        || isBetween(pos.y + h, item.pos.y, item.pos.y + item.height))
-        && isLessThan(pos.x, pos.x + w, item.pos.x + item.width); //the x position of the object > Mario (x+width) = Mario will be on the left hand side of the object
+      return (pos.x <= item.pos.x + item.width) 
+      && (!(pos.y > item.pos.y + item.height) || !(pos.y + h < item.pos.y));
     } else if (direction == "RIGHT") {
-      return (isBetween(pos.y, item.pos.y, item.pos.y + item.height)
-        || isBetween(pos.y + h, item.pos.y, item.pos.y + item.height))
-        && isMoreThan(pos.x, pos.x + w, item.pos.x);
+      return (pos.x +w >= item.pos.x) 
+      && (!(pos.y > item.pos.y + item.height) || !(pos.y + h < item.pos.y));
     } else if (direction == "TOP") {
-      return (isBetween(pos.x, item.pos.x, item.pos.x + item.width)
-        || isBetween(pos.x + w, item.pos.x, item.pos.x + item.width))
-        && isLessThan(pos.y, pos.y + h, item.pos.y + h);
+      return (pos.y <= item.pos.y + item.height) 
+      && (!(pos.x > item.pos.x + item.width) || !(pos.x + w < item.pos.x));
     } else if (direction == "BOTTOM") {
-      return (isBetween(pos.x, item.pos.x, item.pos.x + item.width)
-        || isBetween(pos.x + w, item.pos.x, item.pos.x + item.width))
-        && isMoreThan(pos.y, pos.y + h, item.pos.y);
+      return (pos.y + h >= item.pos.y) 
+      && (!(pos.x > item.pos.x + item.width) || !(pos.x + w < item.pos.x));
     }
     return false;
   }
@@ -122,13 +102,10 @@ class Mario {
         pos.y -= 10;
         jumpHeight = 0;
         isFalling = false;
-        canJump = true;
       } else if (isOn("LEFT", item)) {
         blockLeft = true;
-        pos.x -= 1;
       } else if (isOn("RIGHT", item)) {
         blockRight = true;
-        pos.x += 1;
       }
     }
   }
